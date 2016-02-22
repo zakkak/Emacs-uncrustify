@@ -1,14 +1,20 @@
-;;; uncrustify.el --- apply uncrustify on buffer region
+;;; uncrustify.el --- apply uncrustify on buffer or active region
 
+;; Copyright (C) 2016 Foivos Zakkak <foivos at zakkak dot net>
 ;; Copyright (C) 2010 Gustavo Lima Chaves
 
 ;; Author: Gustavo Lima Chaves <com dot gmail at limachaves, in reversed order>
 ;; Modified: Gordon Read <com dot f2s at gtread, in reversed order>
-;;           Added Customisation vars, uncrustify-region, uncrustify-buffer and
-;;           uncrustify-on-save hook (15/06/2011)
+;;           Added Customisation vars, uncrustify-region,
+;;           uncrustify-buffer and uncrustify-on-save hook (15/06/2011)
 ;; Modified: Gordon read <com dot f2s at gtread, in reversed order>
 ;;           Added uncrustify-init-hooks and uncrustify-finish-hooks
 ;;           (12/07/2011)
+;; Modified: Foivos Zakkak
+;;           Merged uncrustify-buffer and uncrustify-region in a single
+;;           function. Removed hook to make it less intrusive. Added
+;;           support to automatically infer the programming language
+;;            from the major-mode. (22/02/2016)
 ;; Website: TODO
 ;; Keywords: uncrustify
 
@@ -30,24 +36,20 @@
 ;;; Commentary:
 
 ;; A simple Emacs interface for the uncrustify source code beautifier.
-;; Checks your buffers for improper code indentation. It will follow
+;; Checks your buffers for improper code indentation.  It will follow
 ;; the indentation rules found in the specified configuration file.
 
 ;; Load this file and run:
 ;;
-;;  M-x uncrustify-buffer
-;;
-;; to indent the whole buffer or select a region and run
-;;
 ;;  M-x uncrustify
 ;;
-;; to indent just the region.
+;; to indent the whole buffer or the selected region.
 ;;
 ;; See also Customisation group "uncrustify"
 
 ;;; Code:
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Custom
 
 (defgroup uncrustify nil
@@ -55,7 +57,7 @@
   :group 'uncrustify)
 
 (defcustom uncrustify-uncrustify-cfg-file "~/.uncrustify.cfg"
-  "Path to uncrustify configuration file.\n"
+  "Path to uncrustify configuration file."
   :type 'string
   :group 'uncrustify)
 
@@ -74,7 +76,7 @@
   :type 'hook
   :group 'uncrustify)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; vars
 
 (defvar uncrustify-path nil
@@ -117,7 +119,7 @@
     (message "Uncrustify not found in path - no change"))
   (run-hooks 'uncrustify-finish-hooks))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; public functions
 
 ;;;###autoload
@@ -136,6 +138,6 @@
     (goto-char (point-min))
     (forward-line (1- current-line))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (provide 'uncrustify)
 ;; uncrustify.el ends here
