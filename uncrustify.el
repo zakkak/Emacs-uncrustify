@@ -77,19 +77,15 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; vars
 
-(defvar uncrustify-uncrustify-path nil
+(defvar uncrustify-path nil
   "The uncrustify executable in path.\n
   When non-nil return value is the path to local uncrustify.\n
   :SEE (URL `http://uncrustify.sourceforge.net/index.php')")
-(unless (bound-and-true-p uncrustify-uncrustify-path)
-  (let ((uncrustify-path
-         (or (executable-find "uncrustify")
-             (executable-find "uncrustify.exe"))))
-    (when uncrustify-path (setq uncrustify-uncrustify-path
-                                uncrustify-path))))
+(unless (bound-and-true-p uncrustify-path)
+  (let ((path (or (executable-find "uncrustify")
+                  (executable-find "uncrustify.exe"))))
+    (when path (setq uncrustify-path path))))
 
-(defun uncrustify-impl (point-a point-b)
-  ""
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; private functions
 
