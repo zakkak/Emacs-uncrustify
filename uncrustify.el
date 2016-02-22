@@ -60,9 +60,7 @@
   :group 'uncrustify)
 
 (defcustom uncrustify-args ""
-  "Additional arguments to pass to uncrustify.
-  These may be, for example \"-l C\" to specify the C language,
-  \"-l CPP\" to specify C++ etc."
+  "Additional arguments to pass to uncrustify."
   :type 'string
   :group 'uncrustify)
 
@@ -90,20 +88,36 @@
     (when uncrustify-path (setq uncrustify-uncrustify-path
                                 uncrustify-path))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; private impl fns
-
 (defun uncrustify-impl (point-a point-b)
   ""
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; private functions
+
+(defun uncrustify~get-lang ()
+  "Get language based on major-mode"
+  (case major-mode
+    ('c-mode    "C")
+    ('c++-mode  "CPP")
+    ('d-mode    "D")
+    ('java-mode "JAVA")
+    ('objc-mode "OC")
+    ('vala-mode "VALA")
+    (t nil)))
+
   (run-hooks 'uncrustify-init-hooks)
-  (if uncrustify-uncrustify-path
-      (let* ((cmd (format "%s -c %s %s" uncrustify-uncrustify-path
-                          uncrustify-uncrustify-cfg-file uncrustify-args)))
-        (shell-command-on-region point-a point-b cmd t t
-                                 null-device))
+  (if uncrustify-path
+      (let ((lang (uncrustify~get-lang)))
+        (if (stringp lang)
+            (let ((cmd (format "%s -c %s -l %s %s"
+                               uncrustify-path
+                               uncrustify-uncrustify-cfg-file
+                               lang
+                               uncrustify-args)))
+              (shell-command-on-region point-a point-b cmd t t
+                                       null-device))
+          (message "Language not supported by uncrustify - no change")))
     (message "Uncrustify not found in path - no change"))
-  (run-hooks 'uncrustify-finish-hooks)
-  nil)
+  (run-hooks 'uncrustify-finish-hooks))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; public functions
