@@ -100,6 +100,8 @@
     ('vala-mode "VALA")
     (t nil)))
 
+(defun uncrustify~run (point-a point-b)
+  "Invoke uncrustify"
   (run-hooks 'uncrustify-init-hooks)
   (if uncrustify-path
       (let ((lang (uncrustify~get-lang)))
@@ -118,24 +120,21 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; public functions
 
+;;;###autoload
 (defun uncrustify ()
-  "Uncrustify the marked region.
-  The configuration file will be read from the specification given by
-  `uncrustify-uncrustify-cfg-file'."
+  "Uncrustify the entire buffer or the marked region, if any.
+  The configuration file will be read from the specification
+  given by `uncrustify-uncrustify-cfg-file'. The cursor will
+  attempt to (re)locate the current line, which might change as a
+  result of the uncrustification."
   (interactive)
-  (save-excursion
-    (uncrustify-impl (region-beginning) (region-end))))
-
-(defun uncrustify-buffer ()
-  "Uncrustify the entire buffer.
-  The configuration file will be read from the specification given by
-  `uncrustify-uncrustify-cfg-file'. The cursor will attempt to (re)locate
-  the current line, which might change as a result of the uncrustification."
-  (interactive)
-  (let* ((uncrustify-current-line (line-number-at-pos)))
+  (let ((current-line (line-number-at-pos)))
     (save-excursion
-      (uncrustify-impl (point-min) (point-max)))
-    (goto-char (point-min)) (forward-line (1- uncrustify-current-line))))
+      (if (and mark-active (/= (point) (mark)))
+          (uncrustify~run (region-beginning) (region-end))
+        (uncrustify~run (point-min) (point-max))))
+    (goto-char (point-min))
+    (forward-line (1- current-line))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (provide 'uncrustify)
