@@ -1,0 +1,11 @@
+Simple Emacs functions calling uncrustify on a buffer or region.
+
+To automatically uncrustify the code when saving the file add something
+like the following in your configuration.
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'c-mode-common-hook
+          '(lambda()
+             (make-local-variable 'write-contents-hooks)
+             (add-hook 'write-contents-hooks 'uncrustify)))
+#+END_SRC

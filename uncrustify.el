@@ -66,15 +66,6 @@
   :type 'string
   :group 'uncrustify)
 
-(defcustom uncrustify-uncrustify-on-save nil
-  "Whether to uncrustify the buffer when file is saved.\n
-  When non-nil, uncrustify will be run when a cc-mode buffer is saved.
-  The configuration file will be read from the specification given by
-  `uncrustify-uncrustify-cfg-file'."
-  :type '(choice (const :tag "off" nil)
-                 (const :tag "on" t))
-  :group 'uncrustify)
-
 (defcustom uncrustify-init-hooks nil
   "Hooks called prior to running uncrustify."
   :type 'hook
@@ -135,20 +126,6 @@
     (save-excursion
       (uncrustify-impl (point-min) (point-max)))
     (goto-char (point-min)) (forward-line (1- uncrustify-current-line))))
-
-;; If uncrustify-uncrustify-on-save is non nil, uncrustify the whole buffer.
-(defun uncrustify-uncrustify-buffer-on-save ()
-  (if uncrustify-uncrustify-on-save (uncrustify-buffer)
-    (not-modified))
-  nil)
-
-;; add a c-mode-common-hook that uncrustifies the buffer when it is saved,
-;; iff uncrustify-uncrustify-on-save is non nil.
-(add-hook 'c-mode-common-hook
-          '(lambda()
-             (make-local-variable 'write-contents-hooks)
-             (add-hook 'write-contents-hooks
-                       'uncrustify-uncrustify-buffer-on-save)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (provide 'uncrustify)
